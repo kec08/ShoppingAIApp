@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "famicons_cart-outline.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
