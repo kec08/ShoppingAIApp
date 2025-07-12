@@ -11,7 +11,7 @@ import SwiftUI
 struct RootView: App {
     var body: some Scene {
         WindowGroup {
-            AddProductView()
+            MainView()
         }
     }
 }
