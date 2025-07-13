@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MainView: View {
-    @State private var products: [Product] = [] // 상품 데이터를 저장할 배열
+    @State private var products: [Product] = []
     @State private var isShowingAddProduct = false
 
     var body: some View {
@@ -11,83 +11,75 @@ struct MainView: View {
                     Text("갤러리")
                         .font(.title)
                         .fontWeight(.bold)
-                        .font(.system(size: 22))
-                        .foregroundColor(.customBlack)
-                    
+                        .foregroundColor(.black)
+
                     Spacer()
-                    
+
                     Button(action: {
-                        // 편집 동작 (미구현)
+                        // 편집 기능 (필요시 구현)
                     }) {
                         Text("편집")
-                            .fontWeight(.medium)
                             .foregroundColor(.gray)
-                            .padding(.horizontal, 24)
-                            .font(.system(size: 18))
                     }
-                    
+
                     Button(action: {
                         isShowingAddProduct = true
                     }) {
                         Text("추가")
-                            .fontWeight(.medium)
                             .foregroundColor(.gray)
                     }
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 32)
-                .background(Color.white) // 상단 바 배경색
-                
+
                 if products.isEmpty {
-                    // 상품이 없을 때 표시
                     Spacer()
                         .frame(height: 200)
-                    
-                    HStack {
-                        VStack {
-                            Image("Main_cart")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 80, height: 80)
-                                .padding(.bottom, 10)
-                            
-                            Text("아직 상품이 없습니다\n상품을 추가 해보세요!")
-                                .font(.system(size: 20))
-                                .fontWeight(.medium)
-                                .foregroundColor(.gray)
-                        }
+
+                    VStack {
+                        Image(systemName: "cart")
+                            .resizable()
+                            .frame(width: 80, height: 80)
+                            .foregroundColor(.gray)
+
+                        Text("아직 상품이 없습니다\n상품을 추가 해보세요!")
+                            .font(.system(size: 18))
+                            .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
                     }
-                    
+
                     Spacer()
                 } else {
-                    // 상품이 있을 때 갤러리 형태로 표시
                     ScrollView {
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
-                            ForEach(products, id: \.id) { product in
-                                VStack {
+                        LazyVStack(spacing: 15) {
+                            ForEach(products) { product in
+                                HStack(spacing: 15) {
                                     if let image = product.image {
                                         Image(uiImage: image)
                                             .resizable()
-                                            .scaledToFit()
-                                            .frame(height: 150)
-                                            .cornerRadius(10)
+                                            .scaledToFill()
+                                            .frame(width: 100, height: 100)
+                                            .clipped()
+                                            .cornerRadius(8)
                                     } else {
-                                        Image(systemName: "photo")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(height: 50)
-                                            .foregroundColor(.gray)
+                                        Rectangle()
+                                            .fill(Color.gray.opacity(0.3))
+                                            .frame(width: 100, height: 100)
                                             .overlay(
-                                                RoundedRectangle(cornerRadius: 10)
-                                                    .stroke(Color.gray, lineWidth: 1)
+                                                Image(systemName: "photo")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(width: 40, height: 40)
+                                                    .foregroundColor(.gray)
                                             )
+                                            .cornerRadius(8)
                                     }
+
                                     VStack(alignment: .leading, spacing: 5) {
                                         Text(product.name)
-                                            .font(.system(size: 16))
-                                            .fontWeight(.medium)
+                                            .font(.system(size: 16, weight: .medium))
                                             .lineLimit(1)
-                                        Text("카테고리: \(product.category)") // 카테고리 추가
+                                        Text("카테고리: \(product.category)")
                                             .font(.system(size: 14))
                                             .foregroundColor(.gray)
                                         Text("₩\(product.price)")
@@ -95,21 +87,22 @@ struct MainView: View {
                                             .foregroundColor(.gray)
                                         Text("욕구: \(product.purchaseDesire)/10")
                                             .font(.system(size: 14))
-                                            .foregroundColor(.gray)
+                                            .foregroundColor(.red)
                                     }
+
+                                    Spacer()
                                 }
-                                .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.white) // 각 아이템 배경색
-                                .cornerRadius(10)
-                                .shadow(radius: 2)
+                                .background(Color.white)
+                                .cornerRadius(12)
+                                .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 2)
                             }
                         }
                         .padding()
                     }
                 }
             }
-            .background(Color.white) // 전체 배경색
+            .background(Color.white)
             .sheet(isPresented: $isShowingAddProduct) {
                 AddProductView(addProduct: { newProduct in
                     products.append(newProduct)
@@ -121,19 +114,3 @@ struct MainView: View {
     }
 }
 
-// 상품 모델 (카테고리 필드 추가)
-struct Product: Identifiable {
-    let id = UUID()
-    var image: UIImage?
-    var name: String
-    var price: String
-    var url: String
-    var purchaseDesire: Int
-    var usageContext: String
-    var features: String
-    var category: String // 새로운 카테고리 필드
-}
-
-#Preview {
-    MainView()
-}
