@@ -8,7 +8,6 @@ struct ProductDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 
-                // 상품 이미지
                 if let image = product.image {
                     Image(uiImage: image)
                         .resizable()
@@ -29,20 +28,15 @@ struct ProductDetailView: View {
                         )
                         .cornerRadius(12)
                 }
-
-                // 상품 상세 정보
+                
                 Group {
                     DetailSection(title: "카테고리", content: product.category)
                     DetailSection(title: "상품 이름", content: product.name)
                     
-                    // 가격 표시 (₩ 포맷)
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("가격")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
                         Text("₩ \(formattedPrice(product.price))")
-                            .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(.black)
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(.customBlack)
                     }
                     
                     DetailSection(title: "구매 욕구", content: "\(product.purchaseDesire) / 10")
@@ -75,7 +69,7 @@ struct ProductDetailView: View {
                         .fontWeight(.bold)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.red)
+                        .background(.customRed)
                         .cornerRadius(12)
                 }
             }
