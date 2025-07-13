@@ -24,12 +24,13 @@ struct AddProductView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
+                    // 이미지 선택
                     ZStack {
                         if let image = selectedImage {
                             Image(uiImage: image)
                                 .resizable()
                                 .scaledToFill()
-                                .frame(height: 180)
+                                .frame(height: 240)
                                 .clipped()
                                 .cornerRadius(10)
                         } else {
@@ -44,13 +45,12 @@ struct AddProductView: View {
                                     .foregroundColor(.customRed)
                                     .font(.system(size: 16, weight: .semibold))
                             }
-                            .frame(height: 180)
+                            .frame(height: 240)
                             .frame(maxWidth: .infinity)
                             .background(Color.gray.opacity(0.1))
                             .cornerRadius(10)
                         }
                     }
-                    .padding(.bottom, 20)
                     .onTapGesture {
                         isImagePickerPresented = true
                     }
@@ -59,11 +59,11 @@ struct AddProductView: View {
                     }
 
                     Group {
-                        UnderlineTextField(title: "상품 이름", text: $productName, isFocused: focusedField == .name)
-                            .focused($focusedField, equals: .name)
-
                         UnderlineTextField(title: "카테고리", text: $category, isFocused: focusedField == .category)
                             .focused($focusedField, equals: .category)
+
+                        UnderlineTextField(title: "상품 이름", text: $productName, isFocused: focusedField == .name)
+                            .focused($focusedField, equals: .name)
 
                         UnderlineTextField(title: "가격 (원)", text: $productPrice, isFocused: focusedField == .price, keyboardType: .numberPad)
                             .focused($focusedField, equals: .price)
@@ -73,9 +73,14 @@ struct AddProductView: View {
                     }
 
                     VStack(spacing: 5) {
-                        Text("구매 욕구: \(Int(purchaseDesire)) / 10")
-                            .font(.system(size: 16))
-                            .fontWeight(.bold)
+                        HStack {
+                            Spacer()
+                            Text("구매 욕구: \(Int(purchaseDesire)) / 10")
+                                .font(.system(size: 16))
+                                .fontWeight(.bold)
+                                .foregroundColor(.customBlack)
+                            Spacer()
+                        }
 
                         Slider(value: $purchaseDesire, in: 0...10, step: 1)
                             .accentColor(.customRed)
@@ -99,6 +104,7 @@ struct AddProductView: View {
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(10)
                         .foregroundColor(.gray)
+                        .fontWeight(.bold)
 
                         Button("추가하기") {
                             guard !productName.isEmpty, !productPrice.isEmpty else { return }
@@ -121,6 +127,7 @@ struct AddProductView: View {
                         .background(Color.customRed)
                         .foregroundColor(.white)
                         .cornerRadius(10)
+                        .fontWeight(.bold)
                     }
                     .padding(.top, 20)
                 }
@@ -161,4 +168,3 @@ struct UnderlineTextField: View {
         }
     }
 }
-
