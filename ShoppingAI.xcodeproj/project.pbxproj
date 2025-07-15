@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		BC96263F2E23E5CA00A6C27B /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC96263E2E23E5C700A6C27B /* ImagePicker.swift */; };
 		BC9626412E23E5DF00A6C27B /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC9626402E23E5DE00A6C27B /* Product.swift */; };
-		BC9626472E2409E200A6C27B /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC9626462E2409E200A6C27B /* Secrets.plist */; };
 		BCAC4C482E223E8300E06946 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BCAC4C422E223E8300E06946 /* Assets.xcassets */; };
 		BCAC4CF52E22410C00E06946 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAC4CF42E22410600E06946 /* MainView.swift */; };
 		BCAC4CFD2E22414400E06946 /* MainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAC4CFC2E22412A00E06946 /* MainModel.swift */; };
@@ -21,6 +20,7 @@
 		BCAC4D092E22418900E06946 /* AddProductViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAC4D082E22418100E06946 /* AddProductViewModel.swift */; };
 		BCAC4D0B2E2241B600E06946 /* ShoppingApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAC4D0A2E22419C00E06946 /* ShoppingApp.swift */; };
 		BCAC4D0D2E2241C800E06946 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAC4D0C2E2241BF00E06946 /* RootView.swift */; };
+		BCD37E982E25DA690098AE84 /* Secretss.plist in Resources */ = {isa = PBXBuildFile; fileRef = BCD37E972E25DA620098AE84 /* Secretss.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,7 +43,6 @@
 /* Begin PBXFileReference section */
 		BC96263E2E23E5C700A6C27B /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		BC9626402E23E5DE00A6C27B /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
-		BC9626462E2409E200A6C27B /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
 		BCAC4C182E223E5200E06946 /* ShoppingAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShoppingAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCAC4C252E223E5400E06946 /* ShoppingAITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShoppingAITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCAC4C2F2E223E5400E06946 /* ShoppingAIUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShoppingAIUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -58,6 +57,7 @@
 		BCAC4D082E22418100E06946 /* AddProductViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProductViewModel.swift; sourceTree = "<group>"; };
 		BCAC4D0A2E22419C00E06946 /* ShoppingApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingApp.swift; sourceTree = "<group>"; };
 		BCAC4D0C2E2241BF00E06946 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		BCD37E972E25DA620098AE84 /* Secretss.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Secretss.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -126,10 +126,10 @@
 		BCAC4C452E223E8300E06946 /* ShoppingAI */ = {
 			isa = PBXGroup;
 			children = (
+				BCD37E972E25DA620098AE84 /* Secretss.plist */,
 				BCAC4CF32E223FC800E06946 /* Model */,
 				BCAC4CF22E223FA900E06946 /* Feature */,
 				BCAC4C422E223E8300E06946 /* Assets.xcassets */,
-				BC9626462E2409E200A6C27B /* Secrets.plist */,
 			);
 			path = ShoppingAI;
 			sourceTree = "<group>";
@@ -329,7 +329,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BC9626472E2409E200A6C27B /* Secrets.plist in Resources */,
+				BCD37E982E25DA690098AE84 /* Secretss.plist in Resources */,
 				BCAC4C482E223E8300E06946 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

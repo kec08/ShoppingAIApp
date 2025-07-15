@@ -24,122 +24,156 @@ struct AddProductView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
-                    // 이미지 선택
-                    ZStack {
-                        if let image = selectedImage {
-                            Image(uiImage: image)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(height: 240)
-                                .clipped()
-                                .cornerRadius(10)
-                        } else {
-                            VStack(spacing: 8) {
-                                Image(systemName: "photo")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 60, height: 60)
-                                    .foregroundColor(.gray)
+                    imagePickerSection
 
-                                Text("사진 추가")
-                                    .foregroundColor(.customRed)
-                                    .font(.system(size: 16, weight: .semibold))
-                            }
-                            .frame(height: 240)
-                            .frame(maxWidth: .infinity)
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(10)
-                        }
-                    }
-                    .onTapGesture {
-                        isImagePickerPresented = true
-                    }
-                    .sheet(isPresented: $isImagePickerPresented) {
-                        ImagePicker(image: $selectedImage, isPresented: $isImagePickerPresented)
-                    }
+                    textFieldsSection1
 
-                    Group {
-                        UnderlineTextField(title: "카테고리", text: $category, isFocused: focusedField == .category)
-                            .focused($focusedField, equals: .category)
+                    purchaseDesireSlider
 
-                        UnderlineTextField(title: "상품 이름", text: $productName, isFocused: focusedField == .name)
-                            .focused($focusedField, equals: .name)
+                    textFieldsSection2
 
-                        UnderlineTextField(title: "가격 (원)", text: $productPrice, isFocused: focusedField == .price, keyboardType: .numberPad)
-                            .focused($focusedField, equals: .price)
-
-                        UnderlineTextField(title: "URL", text: $productURL, isFocused: focusedField == .url, keyboardType: .URL)
-                            .focused($focusedField, equals: .url)
-                    }
-
-                    VStack(spacing: 5) {
-                        HStack {
-                            Spacer()
-                            Text("구매 욕구: \(Int(purchaseDesire)) / 10")
-                                .font(.system(size: 16))
-                                .fontWeight(.bold)
-                                .foregroundColor(.customBlack)
-                            Spacer()
-                        }
-
-                        Slider(value: $purchaseDesire, in: 0...10, step: 1)
-                            .accentColor(.customRed)
-                    }
-                    .padding(.top, 10)
-
-                    Group {
-                        UnderlineTextField(title: "사용 용도 및 상황", text: $usageContext, isFocused: focusedField == .usage)
-                            .focused($focusedField, equals: .usage)
-
-                        UnderlineTextField(title: "상품 특징", text: $productFeatures, isFocused: focusedField == .features)
-                            .focused($focusedField, equals: .features)
-                    }
-
-                    HStack(spacing: 10) {
-                        Button("취소하기") {
-                            onDismiss()
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(10)
-                        .foregroundColor(.gray)
-                        .fontWeight(.bold)
-
-                        Button("추가하기") {
-                            guard !productName.isEmpty, !productPrice.isEmpty else { return }
-
-                            let newProduct = Product(
-                                image: selectedImage,
-                                name: productName,
-                                price: productPrice,
-                                url: productURL,
-                                purchaseDesire: Int(purchaseDesire),
-                                usageContext: usageContext,
-                                features: productFeatures,
-                                category: category
-                            )
-                            addProduct(newProduct)
-                            onDismiss()
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.customRed)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .fontWeight(.bold)
-                    }
-                    .padding(.top, 20)
+                    actionButtons
                 }
                 .padding()
                 .background(Color.white)
             }
             .background(Color.white)
-            .navigationTitle("상품 추가")
-            .navigationBarItems(trailing: Button("닫기") {
-                onDismiss()
-            })
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("상품 추가")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.customBlack)
+                }
+
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("닫기") {
+                        onDismiss()
+                    }
+                }
+            }
         }
+    }
+
+    private var imagePickerSection: some View {
+        ZStack {
+            if let image = selectedImage {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: 240)
+                    .clipped()
+                    .cornerRadius(10)
+            } else {
+                VStack(spacing: 8) {
+                    Image(systemName: "photo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 60, height: 60)
+                        .foregroundColor(.gray)
+
+                    Text("사진 추가")
+                        .foregroundColor(.customRed)
+                        .font(.system(size: 16, weight: .semibold))
+                }
+                .frame(height: 240)
+                .frame(maxWidth: .infinity)
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(10)
+            }
+        }
+        .padding(.top, -10)
+        .padding(.bottom, 20)
+        .onTapGesture {
+            isImagePickerPresented = true
+        }
+        .sheet(isPresented: $isImagePickerPresented) {
+            ImagePicker(image: $selectedImage, isPresented: $isImagePickerPresented)
+        }
+    }
+
+    private var textFieldsSection1: some View {
+        VStack(spacing: 16) {
+            UnderlineTextField(title: "카테고리", text: $category, isFocused: focusedField == .category)
+                .focused($focusedField, equals: .category)
+
+            UnderlineTextField(title: "상품 이름", text: $productName, isFocused: focusedField == .name)
+                .focused($focusedField, equals: .name)
+
+            UnderlineTextField(title: "가격 (원)", text: $productPrice, isFocused: focusedField == .price, keyboardType: .numberPad)
+                .focused($focusedField, equals: .price)
+
+            UnderlineTextField(title: "URL", text: $productURL, isFocused: focusedField == .url, keyboardType: .URL)
+                .focused($focusedField, equals: .url)
+        }
+    }
+
+    private var purchaseDesireSlider: some View {
+        VStack(spacing: 5) {
+            HStack {
+                Spacer()
+                Text("구매 욕구: \(Int(purchaseDesire)) / 10")
+                    .font(.system(size: 16))
+                    .fontWeight(.bold)
+                    .foregroundColor(.customBlack)
+                Spacer()
+            }
+
+            Slider(value: $purchaseDesire, in: 0...10, step: 1)
+                .accentColor(.customRed)
+        }
+        .padding(.top, 10)
+    }
+
+    private var textFieldsSection2: some View {
+        VStack(spacing: 16) {
+            UnderlineTextField(title: "사용 용도 및 상황", text: $usageContext, isFocused: focusedField == .usage)
+                .focused($focusedField, equals: .usage)
+
+            UnderlineTextField(title: "상품 특징", text: $productFeatures, isFocused: focusedField == .features)
+                .focused($focusedField, equals: .features)
+        }
+    }
+
+    private var actionButtons: some View {
+        HStack(spacing: 10) {
+            Button("취소하기") {
+                onDismiss()
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(10)
+            .foregroundColor(.gray)
+            .fontWeight(.bold)
+
+            Button("추가하기") {
+                guard !productName.isEmpty, !productPrice.isEmpty else { return }
+
+                let trimmedURL = productURL.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                let newProduct = Product(
+                    id: UUID(),
+                    image: selectedImage,
+                    name: productName,
+                    price: productPrice,
+                    url: trimmedURL,
+                    purchaseDesire: Int(purchaseDesire),
+                    usageContext: usageContext,
+                    features: productFeatures,
+                    category: category
+                )
+                addProduct(newProduct)
+                onDismiss()
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.customRed)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+            .fontWeight(.bold)
+        }
+        .padding(.top, 20)
     }
 }
 
@@ -168,3 +202,4 @@ struct UnderlineTextField: View {
         }
     }
 }
+

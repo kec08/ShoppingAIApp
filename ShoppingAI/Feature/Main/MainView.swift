@@ -3,16 +3,17 @@ import SwiftUI
 struct MainView: View {
     @State private var products: [Product] = []
     @State private var isShowingAddProduct = false
-    @State private var selectedProduct: Product?
-    // Product 모델을 기반으로 AI 질문용 제품만 필터링
+    @State private var productForAdd: Product? = nil
+    @State private var productForEdit: Product? = nil
     @State private var aiTargetProducts: [Product] = []
-    // Q 버튼 클릭 시 AIanswerView로 이동
     @State private var isShowingAIAnswer = false
+    @State private var isShowingClearAlert = false
+    @State private var editMode: EditMode = .inactive
 
     var body: some View {
         NavigationView {
             ZStack(alignment: .bottomTrailing) {
-                VStack {
+                VStack(spacing: 0) {
                     headerView
 
                     if products.isEmpty {
@@ -21,68 +22,81 @@ struct MainView: View {
                         ScrollView {
                             LazyVStack(spacing: 15) {
                                 ForEach(products) { product in
-                                    Button {
-                                        selectedProduct = product
-                                    } label: {
-                                        productCard(product)
-                                    }
+                                    productCard(product)
+                                        .contentShape(Rectangle())
+                                        .onTapGesture {
+                                            if editMode == .active {
+                                                productForEdit = product
+                                            } else {
+                                                productForAdd = product
+                                            }
+                                        }
+                                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                            if editMode == .active {
+                                                Button(role: .destructive) {
+                                                    products.removeAll { $0.id == product.id }
+                                                    aiTargetProducts.removeAll { $0.id == product.id }
+                                                } label: {
+                                                    Label("삭제", systemImage: "trash")
+                                                }
+                                            }
+                                        }
                                 }
                             }
-                            .padding()
+                            .padding(.horizontal)
+                            .padding(.bottom, 120)
                         }
+                        .frame(maxWidth: .infinity)
                     }
                 }
+                .background(Color.white.ignoresSafeArea())
+                .environment(\.editMode, $editMode)
 
-                ZStack(alignment: .topTrailing) {
-                    Button(action: {
-                        isShowingAIAnswer = true
-                    }) {
-                        Image("Main_Q_Buttom")
-                            .resizable()
-                            .frame(width: 64, height: 64)
-                            .shadow(radius: 4)
-                            .opacity(aiTargetProducts.count >= 2 ? 1.0 : 0.5)
-                    }
-                    .disabled(aiTargetProducts.count < 2)
-                    .sheet(isPresented: $isShowingAIAnswer) {
-                        AIanswerView(products: aiTargetProducts)
-                    }
-                    
-                    if aiTargetProducts.count > 0 {
-                        Text("\(aiTargetProducts.count)")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundColor(.white)
-                            .padding(10)
-                            .background(Color.black)
-                            .clipShape(Circle())
-                            .offset(x: 10, y: -10)
-                    }
-                }
-                .padding(.trailing, 24)
-                .padding(.bottom, 24)
+                qButtonView
+                    .padding(.trailing, 24)
+                    .padding(.bottom, 24)
             }
-            .background(Color.white.ignoresSafeArea())
-
             .sheet(isPresented: $isShowingAddProduct) {
                 AddProductView(addProduct: { newProduct in
-                    products.append(newProduct)
+                    if !products.contains(where: { $0.id == newProduct.id }) {
+                        products.append(newProduct)
+                    }
                 }, onDismiss: {
                     isShowingAddProduct = false
                 })
             }
-
-            .sheet(item: $selectedProduct) { product in
-                ProductDetailView(product: product) {
-                    products.append(product)
-                    aiTargetProducts.append(product)
-                    selectedProduct = nil
+            .sheet(item: $productForAdd) { product in
+                ProductDetailView(
+                    product: product,
+                    isEditing: false,
+                    onAdd: {
+                        if !aiTargetProducts.contains(where: { $0.id == product.id }) {
+                            aiTargetProducts.append(product)
+                        }
+                        productForAdd = nil
+                    }
+                )
+            }
+            .sheet(item: $productForEdit) { product in
+                ProductDetailView(
+                    product: product,
+                    isEditing: true,
+                    onDelete: {
+                        products.removeAll { $0.id == product.id }
+                        aiTargetProducts.removeAll { $0.id == product.id }
+                        productForEdit = nil
+                        editMode = .inactive
+                    }
+                )
+            }
+            .alert("선택한 AI 대상 상품을 모두 비우시겠습니까?", isPresented: $isShowingClearAlert) {
+                Button("취소", role: .cancel) {}
+                Button("비우기", role: .destructive) {
+                    aiTargetProducts.removeAll()
                 }
             }
         }
     }
-
-
-    // MARK: - Header
 
     private var headerView: some View {
         HStack {
@@ -93,20 +107,28 @@ struct MainView: View {
 
             Spacer()
 
-            Button("편집") {}
-                .foregroundColor(.gray)
-                .padding(.horizontal, 15)
+            HStack(spacing: 24) {
+                Button("비우기") {
+                    isShowingClearAlert = true
+                }
+                .foregroundColor(.red)
 
-            Button("추가") {
-                isShowingAddProduct = true
+                Button(editMode == .active ? "완료" : "편집") {
+                    withAnimation {
+                        editMode = (editMode == .active ? .inactive : .active)
+                    }
+                }
+                .foregroundColor(.gray)
+
+                Button("추가") {
+                    isShowingAddProduct = true
+                }
+                .foregroundColor(.gray)
             }
-            .foregroundColor(.gray)
         }
         .padding(.horizontal, 24)
         .padding(.top, 32)
     }
-
-    // MARK: - Empty View
 
     private var emptyStateView: some View {
         VStack {
@@ -129,7 +151,33 @@ struct MainView: View {
         }
     }
 
-    // MARK: - 상품 카드뷰
+    private var qButtonView: some View {
+        ZStack(alignment: .topTrailing) {
+            Button(action: {
+                isShowingAIAnswer = true
+            }) {
+                Image("Main_Q_Buttom")
+                    .resizable()
+                    .frame(width: 64, height: 64)
+                    .shadow(radius: 4)
+                    .opacity(aiTargetProducts.count >= 2 ? 1.0 : 0.5)
+            }
+            .disabled(aiTargetProducts.count < 2)
+            .sheet(isPresented: $isShowingAIAnswer) {
+                AIanswerView(products: aiTargetProducts)
+            }
+
+            if aiTargetProducts.count > 0 {
+                Text("\(aiTargetProducts.count)")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding(10)
+                    .background(Color.black)
+                    .clipShape(Circle())
+                    .offset(x: 10, y: -10)
+            }
+        }
+    }
 
     private func productCard(_ product: Product) -> some View {
         HStack(spacing: 15) {

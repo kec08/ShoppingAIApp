@@ -2,12 +2,13 @@ import SwiftUI
 
 struct ProductDetailView: View {
     let product: Product
+    let isEditing: Bool
+    var onDelete: (() -> Void)? = nil
     var onAdd: (() -> Void)? = nil
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                
                 if let image = product.image {
                     Image(uiImage: image)
                         .resizable()
@@ -28,30 +29,46 @@ struct ProductDetailView: View {
                         )
                         .cornerRadius(12)
                 }
-                
+
                 Group {
                     DetailSection(title: "카테고리", content: product.category)
                     DetailSection(title: "상품 이름", content: product.name)
-                    
+
                     VStack(alignment: .leading, spacing: 6) {
                         Text("₩ \(formattedPrice(product.price))")
                             .font(.system(size: 24, weight: .bold))
                             .foregroundColor(.customBlack)
                     }
-                    
+
                     DetailSection(title: "구매 욕구", content: "\(product.purchaseDesire) / 10")
-                    
-                    if !product.url.isEmpty, let url = URL(string: product.url) {
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("상품 링크")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                            Link(destination: url) {
-                                Text(product.url)
-                                    .font(.system(size: 18))
-                                    .foregroundColor(.blue)
-                                    .underline()
+
+                    if let url = makeValidURL(from: product.url) {
+                        Link(destination: url) {
+                            HStack(spacing: 12) {
+                                Image(systemName: "link")
+                                    .foregroundColor(.white)
+                                    .padding(10)
+                                    .background(.customRed)
+                                    .clipShape(Circle())
+
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("상품 보러가기")
+                                        .font(.headline)
+                                        .foregroundColor(.customRed)
+
+                                    Text(url.host ?? product.url)
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                }
+
+                                Spacer()
+
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.gray)
                             }
+                            .padding()
+                            .background(Color.white)
+                            .cornerRadius(10)
                         }
                     }
 
@@ -62,9 +79,13 @@ struct ProductDetailView: View {
                 Spacer(minLength: 30)
 
                 Button(action: {
-                    onAdd?()
+                    if isEditing {
+                        onDelete?()
+                    } else {
+                        onAdd?()
+                    }
                 }) {
-                    Text("추가하기")
+                    Text(isEditing ? "삭제하기" : "추가하기")
                         .foregroundColor(.white)
                         .fontWeight(.bold)
                         .frame(maxWidth: .infinity)
@@ -80,6 +101,16 @@ struct ProductDetailView: View {
         .toolbarBackground(Color.white, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .background(Color.white.edgesIgnoringSafeArea(.bottom))
+    }
+
+    private func makeValidURL(from raw: String) -> URL? {
+        var input = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if input.isEmpty { return nil }
+
+        if !input.lowercased().hasPrefix("http") {
+            input = "https://" + input
+        }
+        return URL(string: input)
     }
 
     private func formattedPrice(_ price: String) -> String {
